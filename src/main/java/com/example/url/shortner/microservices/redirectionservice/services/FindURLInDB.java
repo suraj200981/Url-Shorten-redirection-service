@@ -10,10 +10,8 @@ public class FindURLInDB {
 
     @Autowired
     RedirectionRepository repo;
-    public UrlDTO findUrl(String url){
-        UrlDTO urlDTO= new UrlDTO();
-
-        urlDTO= repo.findByshortenedUrl(url);
+    public UrlDTO findUrl(String shortenedUrl){
+        UrlDTO urlDTO = repo.findByShortenedUrl(shortenedUrl);
          if(urlDTO==null){
              throw new RuntimeException("URL was not found");
          }else{

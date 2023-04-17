@@ -2,11 +2,17 @@ package com.example.url.shortner.microservices.redirectionservice.model;
 
 import lombok.Data;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
-@Data
-public class UrlDTO {
 
+@Entity
+@Data
+@Table(name = "urls")
+public class UrlDTO {
+    @Id
     private int id;
     private String originalUrl;
     //hide prefix in database

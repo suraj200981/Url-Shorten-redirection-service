@@ -9,27 +9,27 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 public class RedirectController {
 
-        @Autowired
-        FindURLInDB findURLInDB;
-    @RequestMapping("/redirect")
-    public RedirectView RequestRedirection(@RequestBody UrlDTO urlDTO){
+    @Autowired
+    FindURLInDB findURLInDB;
 
-        System.out.println("Redirecting "+urlDTO.getShortenedUrl()+" to "+ urlDTO.getOriginalUrl());
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("https://www.google.com");
-
-        return redirectView;
-
-    }
+//    @RequestMapping("/redirect")
+//    public RedirectView RequestRedirection(@RequestBody UrlDTO urlDTO) {
+//
+//        System.out.println("Redirecting " + urlDTO.getShortenedUrl() + " to " + urlDTO.getOriginalUrl());
+//        RedirectView redirectView = new RedirectView();
+//        redirectView.setUrl("https://www.google.com");
+//
+//        return redirectView;
+//
+//    }
 
     @RequestMapping("/redirectme")
-    public RedirectView RequestRedirection(@RequestBody String shortUrl){
-        UrlDTO urlDTO = new UrlDTO();
-        urlDTO= findURLInDB.findUrl(shortUrl);
+    public RedirectView RequestRedirection(@RequestBody UrlDTO shortUrl) {
+        UrlDTO urlDTO = findURLInDB.findUrl(shortUrl.getShortenedUrl());
 
-        System.out.println("Redirecting "+shortUrl+" to"+urlDTO.getOriginalUrl());
+        System.out.println("Redirecting " + shortUrl.getShortenedUrl() + " to " + urlDTO.getOriginalUrl());
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(urlDTO.getOriginalUrl());
+        redirectView.setUrl("https://"+urlDTO.getOriginalUrl());
 
         return redirectView;
 

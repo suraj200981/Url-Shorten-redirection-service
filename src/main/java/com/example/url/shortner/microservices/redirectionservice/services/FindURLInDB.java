@@ -13,8 +13,12 @@ public class FindURLInDB {
     public UrlDTO findUrl(String url){
         UrlDTO urlDTO= new UrlDTO();
 
-        return null;
-
+        urlDTO= repo.findByshortenedUrl(url);
+         if(urlDTO==null){
+             throw new RuntimeException("URL was not found");
+         }else{
+             return urlDTO;
+         }
     }
 
 }

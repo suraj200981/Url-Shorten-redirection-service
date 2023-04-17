@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RedirectionRepository extends JpaRepository<UrlDTO,Integer> {
 
-
+    UrlDTO findByshortenedUrl(String url);
 
 }

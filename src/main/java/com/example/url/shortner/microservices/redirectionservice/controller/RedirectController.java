@@ -23,11 +23,12 @@ public class RedirectController {
 //
 //    }
 
-    @RequestMapping("/redirectme")
-    public RedirectView RequestRedirection(@RequestBody UrlDTO shortUrl) {
-        UrlDTO urlDTO = findURLInDB.findUrl(shortUrl.getShortenedUrl());
+    @RequestMapping("/{code}")
+    public RedirectView RequestRedirection(@PathVariable String code) {
 
-        System.out.println("Redirecting " + shortUrl.getShortenedUrl() + " to " + urlDTO.getOriginalUrl());
+        UrlDTO urlDTO = findURLInDB.findUrl("localhost:8200/"+code);
+
+        System.out.println("Redirecting " + urlDTO.getShortenedUrl() + " to " + urlDTO.getOriginalUrl());
         RedirectView redirectView = new RedirectView();
         redirectView.setUrl("https://"+urlDTO.getOriginalUrl());
 

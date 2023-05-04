@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Slf4j
+@CrossOrigin
 @RestController
 public class RedirectController {
     @Autowired
@@ -27,7 +28,8 @@ public class RedirectController {
 
         System.out.println("Redirecting " + urlDTO.getShortenedUrl() + " to " + urlDTO.getOriginalUrl());
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("https://" + urlDTO.getOriginalUrl());
+//        redirectView.setUrl("https://" + urlDTO.getOriginalUrl());
+        redirectView.setUrl("http://localhost:8080/redirect");
         urlDTO.setClickCount(urlDTO.getClickCount() + 1);
         redirectionRepository.save(urlDTO);
         log.info("tracking updated");

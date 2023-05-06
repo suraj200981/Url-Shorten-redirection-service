@@ -6,7 +6,13 @@ import com.example.url.shortner.microservices.redirectionservice.services.FindUR
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @CrossOrigin
@@ -22,19 +28,27 @@ public class RedirectController {
 
 
     @RequestMapping("/{code}")
-    public RedirectView RequestRedirection(@PathVariable String code) {
+    public ModelAndView RequestRedirection(@PathVariable String code, HttpServletResponse response) {
 
         UrlDTO urlDTO = findURLInDB.findUrl(rootURL + code);
 
         System.out.println("Redirecting " + urlDTO.getShortenedUrl() + " to " + urlDTO.getOriginalUrl());
         RedirectView redirectView = new RedirectView();
-//        redirectView.setUrl("https://" + urlDTO.getOriginalUrl());
         redirectView.setUrl("http://localhost:8080/redirect");
         urlDTO.setClickCount(urlDTO.getClickCount() + 1);
         redirectionRepository.save(urlDTO);
         log.info("tracking updated");
 
-        return redirectView;
+        Cookie originalUrlCookie = new Cookie("originalUrl", urlDTO.getOriginalUrl());
+        originalUrlCookie.setMaxAge(60 * 60 * 24 * 365); // set cookie to expire in 1 year
+        response.addCookie(originalUrlCookie);
 
+        Map<String, String> jsonResponse = new HashMap<>();
+        jsonResponse.put("originalUrl", urlDTO.getOriginalUrl());
+        ModelAndView modelAndView = new ModelAndView(redirectView);
+        modelAndView.addObject("jsonResponse", jsonResponse);
+        return modelAndView;
     }
+
+
 }

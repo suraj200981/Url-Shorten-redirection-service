@@ -53,7 +53,7 @@ public class RedirectController {
         ModelAndView modelAndView = new ModelAndView(redirectView);
         modelAndView.addObject("jsonResponse", jsonResponse);
 
-        kafkaProducerService.sendMessage(String.valueOf(urlDTO.getClickCount())+ " is the click count", "my-topic");
+        kafkaProducerService.sendMessage(String.valueOf(urlDTO.getClickCount()), "my-topic");
 
         return modelAndView;
     }

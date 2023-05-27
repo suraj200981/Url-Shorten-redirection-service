@@ -1,5 +1,6 @@
 package com.example.url.shortner.microservices.redirectionservice.controller;
 
+import com.example.url.shortner.microservices.redirectionservice.kafka.KafkaProducerService;
 import com.example.url.shortner.microservices.redirectionservice.model.UrlDTO;
 import com.example.url.shortner.microservices.redirectionservice.repository.RedirectionRepository;
 import com.example.url.shortner.microservices.redirectionservice.services.FindURLInDB;
@@ -20,6 +21,10 @@ import java.util.Map;
 public class RedirectController {
     @Autowired
     private RedirectionRepository redirectionRepository;
+
+    @Autowired
+    KafkaProducerService kafkaProducerService;
+
 
     private final String rootURL = "localhost:8200/";
 
@@ -47,6 +52,9 @@ public class RedirectController {
         jsonResponse.put("originalUrl", urlDTO.getOriginalUrl());
         ModelAndView modelAndView = new ModelAndView(redirectView);
         modelAndView.addObject("jsonResponse", jsonResponse);
+
+        kafkaProducerService.sendMessage(String.valueOf(urlDTO.getClickCount())+ " is the click count", "my-topic");
+
         return modelAndView;
     }
 

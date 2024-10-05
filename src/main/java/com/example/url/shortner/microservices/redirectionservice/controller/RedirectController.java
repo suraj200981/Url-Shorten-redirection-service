@@ -4,6 +4,7 @@ import com.example.url.shortner.microservices.redirectionservice.kafka.KafkaProd
 import com.example.url.shortner.microservices.redirectionservice.model.UrlDTO;
 import com.example.url.shortner.microservices.redirectionservice.repository.RedirectionRepository;
 import com.example.url.shortner.microservices.redirectionservice.services.FindURLInDB;
+import com.example.url.shortner.microservices.redirectionservice.utils.PrefixDetector;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,9 @@ public class RedirectController {
     @Autowired
     KafkaProducerService kafkaProducerService;
 
+    @Autowired
+    PrefixDetector prefixDetector;
+
 
     private final String rootURL = "localhost:8200/";
 
@@ -42,19 +46,20 @@ public class RedirectController {
         redirectView.setUrl("http://localhost:8080/redirect");
         urlDTO.setClickCount(urlDTO.getClickCount() + 1);
         redirectionRepository.save(urlDTO);
+
+        String orginalUrl = prefixDetector.prefixDetection(urlDTO);
         log.info("tracking updated");
 
-        Cookie originalUrlCookie = new Cookie("originalUrl", urlDTO.getOriginalUrl());
+        Cookie originalUrlCookie = new Cookie("originalUrl", orginalUrl);
         originalUrlCookie.setMaxAge(60 * 60 * 24 * 365); // set cookie to expire in 1 year
         response.addCookie(originalUrlCookie);
 
         Map<String, String> jsonResponse = new HashMap<>();
-        jsonResponse.put("originalUrl", urlDTO.getOriginalUrl());
+        jsonResponse.put("originalUrl", orginalUrl);
         ModelAndView modelAndView = new ModelAndView(redirectView);
         modelAndView.addObject("jsonResponse", jsonResponse);
 
-        kafkaProducerService.sendMessage(String.valueOf(urlDTO.getClickCount()), "my-topic");
-
+        kafkaProducerService.sendMessage(String.valueOf(urlDTO.getClickCount()), "url-click-topic");
         return modelAndView;
     }
 

@@ -1,10 +1,10 @@
 package com.example.url.shortner.microservices.redirectionservice.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -13,13 +13,27 @@ import java.util.Date;
 @Table(name = "urls")
 public class UrlDTO {
     @Id
-    private int id;
-    private String originalUrl;
-    //hide prefix in database
-    private String prefix;
-    private int clickCount;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-    //    private List<String> ipAddress;
-    private Date createdAt;
+    @Column(name = "shortened_url")
     private String shortenedUrl;
+
+    @Column(name = "original_url")
+    private String originalUrl;
+
+    @Column(name = "prefix")
+    private String prefix;
+
+    @Column(name = "click_count")
+    private Integer clickCount = 0;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    // Define many-to-one relationship with User
+    @ManyToOne(fetch = FetchType.LAZY, optional = true) // Set optional to true
+    @JoinColumn(name = "user_id", nullable = true) // Set nullable to true
+    private User user;
 }
